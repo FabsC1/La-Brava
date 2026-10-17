@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171613">
+  <meta name="description" content="Hamburguesas artesanales, batidos y panes con pollo. Pide La Brava por WhatsApp.">
+  <title>La Brava — Antojo sin pedir permiso</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#171613",
+            paper: "#f6f1e8",
+            fire: "#ef4b2b",
+            gold: "#f4bd42"
+          },
+          fontFamily: {
+            sans: ["DM Sans", "sans-serif"],
+            display: ["Bebas Neue", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #171613;
+      --paper: #f6f1e8;
+      --fire: #ef4b2b;
+      --gold: #f4bd42;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    ::selection {
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    .display {
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: .015em;
+    }
+
+    .hero-image {
+      background:
+        linear-gradient(90deg, rgba(23, 22, 19, .15), rgba(23, 22, 19, .02)),
+        url("https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1600&q=88")
+        center 52% / cover;
+    }
+
+    .grain {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .food-image {
+      background-size: cover;
+      background-position: center;
+      transition: transform .5s ease;
+    }
+
+    .food-card:hover .food-image {
+      transform: scale(1.045);
+    }
+
+    .menu-tab[aria-pressed="true"] {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--ink);
+    }
+
+    .menu-tab:focus-visible,
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .mobile-menu { display: none; }
+    .mobile-menu.open { display: block; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Cabecera con navegación y estado del local -->
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-ink/95 backdrop-blur-md">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 md:px-8">
+      <a href="#inicio" class="flex items-center gap-3" aria-label="La Brava, inicio">
+        <span class="grid h-11 w-11 place-items-center rounded-full bg-fire text-2xl font-extrabold text-white" aria-hidden="true">B!</span>
+        <span class="leading-none">
+          <span class="display block text-[27px]">LA BRAVA</span>
+          <span class="mt-1 block text-[9px] font-bold uppercase tracking-[.25em] text-gold">antojo sin pedir permiso</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-8 text-sm font-semibold text-paper/80 md:flex" aria-label="Navegación principal">
+        <a class="hover:text-gold" href="#carta">La carta</a>
+        <a class="hover:text-gold" href="#nosotros">Nuestra historia</a>
+        <a class="hover:text-gold" href="#contacto">Encuéntranos</a>
+      </nav>
+
+      <div class="hidden items-center gap-4 md:flex">
+        <span class="inline-flex items-center gap-2 text-xs font-semibold">
+          <i class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></i>
+          Abierto hoy
+        </span>
+        <a
+          href="https://wa.me/51999888777?text=Hola%2C%20quiero%20hacer%20un%20pedido%20en%20La%20Brava"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-full bg-gold px-5 py-3 text-sm font-extrabold text-ink hover:bg-white"
+        >Pide ahora ↗</a>
+      </div>
+
+      <button
+        id="menu-toggle"
+        class="grid h-11 w-11 place-items-center rounded-full border border-white/15 text-xl md:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        aria-label="Abrir menú"
+      >☰</button>
+    </div>
+
+    <nav id="mobile-nav" class="mobile-menu border-t border-white/10 px-5 pb-5 md:hidden" aria-label="Navegación móvil">
+      <a class="block py-3 font-semibold" href="#carta">La carta</a>
+      <a class="block py-3 font-semibold" href="#nosotros">Nuestra historia</a>
+      <a class="block py-3 font-semibold" href="#contacto">Encuéntranos</a>
+      <a
+        class="mt-2 block rounded-full bg-gold px-5 py-3 text-center font-extrabold text-ink"
+        href="https://wa.me/51999888777?text=Hola%2C%20quiero%20hacer%20un%20pedido%20en%20La%20Brava"
+        target="_blank"
+        rel="noopener noreferrer"
+      >Pide por WhatsApp ↗</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section id="inicio" class="relative isolate min-h-[650px] overflow-hidden md:min-h-[730px]">
+      <div class="hero-image absolute inset-0 -z-20"></div>
+      <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/80 to-ink/15"></div>
+      <div class="grain absolute inset-0 -z-10 opacity-40"></div>
+
+      <div class="mx-auto grid min-h-[650px] max-w-7xl items-center px-5 py-20 md:min-h-[730px] md:px-8">
+        <div class="max-w-2xl">
+          <span class="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-ink/45 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-gold">
+            ✦ Hecho al momento. Hecho con ganas.
+          </span>
+
+          <h1 class="display text-[clamp(4.5rem,11vw,9.2rem)] leading-[.82]">
+            EL ANTOJO<br>
+            <span class="text-fire">SE PONE</span><br>
+            BRAVO.
+          </h1>
+
+          <p class="mt-7 max-w-lg text-base leading-7 text-paper/75 md:text-lg">
+            Hamburguesas artesanales, batidos espesitos y ese sabor casero que te hace volver. Aquí se viene con hambre.
+          </p>
+
+          <div class="mt-8 flex flex-wrap items-center gap-4">
+            <a href="#carta" class="rounded-full bg-gold px-7 py-4 text-sm font-extrabold text-ink hover:bg-white">
+              Explora la carta ↓
+            </a>
+            <span class="text-sm text-paper/65">★ 100% antojo · 0% complicaciones</span>
+          </div>
+
+          <div class="mt-12 flex gap-8 border-t border-white/15 pt-6 text-xs font-semibold uppercase tracking-[.13em] text-paper/60">
+            <span>Pan recién hecho</span>
+            <span>Carne a la parrilla</span>
+            <span class="hidden sm:inline">Salsas de la casa</span>
+          </div>
+        </div>
+      </div>
+
+      <span class="display absolute bottom-8 right-8 hidden rotate-[-8deg] text-6xl text-gold/80 lg:block">¡ÑAM!</span>
+    </section>
+
+    <!-- Carta filtrable -->
+    <section id="carta" class="bg-paper py-20 text-ink md:py-28">
+      <div class="mx-auto max-w-7xl px-5 md:px-8">
+        <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-[.22em] text-fire">La carta</span>
+            <h2 class="display mt-2 text-6xl leading-none md:text-8xl">
+              BUENAS COSAS,<br class="sm:hidden"> SIN VUELTAS.
+            </h2>
+          </div>
+          <p class="max-w-sm text-sm leading-6 text-ink/65">
+            Todo se prepara al pedirlo. Elige tu favorito y mándanos tu orden por WhatsApp.
+          </p>
+        </div>
+
+        <div class="my-9 flex flex-wrap gap-2" role="group" aria-label="Filtrar productos por categoría">
+          <button class="menu-tab rounded-full border border-ink/20 px-5 py-3 text-sm font-bold" aria-pressed="true" data-filter="all">Todo</button>
+          <button class="menu-tab rounded-full border border-ink/20 px-5 py-3 text-sm font-bold hover:border-fire" aria-pressed="false" data-filter="burgers">Hamburguesas</button>
+          <button class="menu-tab rounded-full border border-ink/20 px-5 py-3 text-sm font-bold hover:border-fire" aria-pressed="false" data-filter="shakes">Batidos</button>
+          <button class="menu-tab rounded-full border border-ink/20 px-5 py-3 text-sm font-bold hover:border-fire" aria-pressed="false" data-filter="extras">Panes y complementos</button>
+        </div>
+
+        <div id="product-grid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+        <p class="mt-8 text-xs text-ink/50">Precios referenciales en soles (S/). Confirma disponibilidad al hacer tu pedido.</p>
+      </div>
+    </section>
+
+    <!-- Historia -->
+    <section id="nosotros" class="relative overflow-hidden bg-fire py-20 md:py-28">
+      <div class="grain absolute inset-0 opacity-30"></div>
+      <div class="relative mx-auto grid max-w-7xl gap-12 px-5 md:grid-cols-2 md:items-center md:px-8">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-[.22em] text-white/70">Con hambre de hacerlo bien</span>
+          <h2 class="display mt-3 text-7xl leading-[.85] md:text-8xl">NO HAY<br>ATAJOS<br>AL SABOR.</h2>
+        </div>
+        <div class="max-w-xl">
+          <p class="text-lg leading-8 text-white/90">
+            La Brava nació de una idea sencilla: servir comida rápida que se sienta hecha en casa. Buen pan, ingredientes frescos, carne a la parrilla y salsas que preparamos aquí mismo.
+          </p>
+          <p class="mt-5 text-lg leading-8 text-white/90">
+            Sin poses y sin esperar una ocasión especial. Solo algo rico, hecho con cariño y con carácter.
+          </p>
+          <a href="#carta" class="mt-8 inline-flex items-center gap-3 font-extrabold text-white underline decoration-gold decoration-2 underline-offset-8">
+            Ven con hambre ↗
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Horario y contacto -->
+    <footer id="contacto" class="bg-ink py-16 md:py-20">
+      <div class="mx-auto max-w-7xl px-5 md:px-8">
+        <div class="grid gap-12 border-b border-white/10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="sm:col-span-2">
+            <a href="#inicio" class="display text-5xl">LA BRAVA<span class="text-fire">.</span></a>
+            <p class="mt-3 max-w-xs text-sm leading-6 text-paper/60">
+              Comida con carácter para gente con hambre. Nos vemos en el próximo antojo.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="mb-4 text-xs font-extrabold uppercase tracking-[.17em] text-gold">Horarios</h3>
+            <p class="text-sm leading-7 text-paper/70">
+              Lunes a domingo<br>
+              12:00 p. m. – 10:00 p. m.<br>
+              <span class="text-paper/40">*Consulta feriados por WhatsApp</span>
+            </p>
+          </div>
+
+          <div>
+            <h3 class="mb-4 text-xs font-extrabold uppercase tracking-[.17em] text-gold">Pide o pregunta</h3>
+            <a class="block text-sm text-paper/70 hover:text-gold" href="tel:+51999888777">+51 999 888 777</a>
+            <a class="mt-2 block text-sm text-paper/70 hover:text-gold" href="https://wa.me/51999888777" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
+            <div class="mt-4 flex gap-4 text-sm font-semibold">
+              <a class="text-paper/70 hover:text-gold" href="https://instagram.com/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+              <a class="text-paper/70 hover:text-gold" href="https://facebook.com/" target="_blank" rel="noopener noreferrer">Facebook ↗</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col justify-between gap-2 pt-6 text-xs text-paper/40 sm:flex-row">
+          <span>© <span id="year"></span> La Brava. Hecho con ganas.</span>
+          <a class="hover:text-paper" href="#inicio">Volver arriba ↑</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Botón flotante para consultas generales -->
+  <a
+    class="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-full bg-[#25D366] px-5 py-4 font-extrabold text-[#102b1a] shadow-2xl shadow-black/30 transition hover:-translate-y-1 hover:bg-[#55e487]"
+    href="https://wa.me/51999888777?text=Hola%2C%20tengo%20una%20consulta%20para%20La%20Brava"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Escríbenos por WhatsApp"
+  >
+    <svg aria-hidden="true" viewBox="0 0 32 32" class="h-6 w-6 fill-current">
+      <path d="M16 .8A15.1 15.1 0 0 0 3.05 23.67L1 31l7.53-1.97A15.1 15.1 0 1 0 16 .8Zm0 27.45a12.3 12.3 0 0 1-6.27-1.72l-.45-.27-4.47 1.17 1.2-4.36-.3-.46A12.35 12.35 0 1 1 16 28.25Zm6.77-9.25c-.37-.18-2.2-1.08-2.54-1.2-.34-.13-.59-.19-.83.18-.25.37-.96 1.2-1.17 1.45-.22.25-.43.28-.8.1-.37-.19-1.56-.58-2.97-1.84a11.1 11.1 0 0 1-2.05-2.56c-.22-.37-.02-.57.16-.75.17-.16.37-.43.55-.64.18-.22.24-.37.37-.62.12-.25.06-.46-.03-.65-.1-.18-.83-2-1.14-2.74-.3-.72-.6-.62-.83-.63h-.71c-.25 0-.65.1-.99.46-.34.37-1.3 1.27-1.3 3.09s1.33 3.59 1.51 3.83c.19.25 2.61 3.98 6.33 5.58.89.38 1.58.6 2.12.77.9.29 1.71.25 2.35.15.72-.1 2.2-.9 2.5-1.78.31-.87.31-1.62.22-1.78-.1-.15-.34-.24-.71-.43Z"/>
+    </svg>
+    <span class="hidden sm:inline">Pide por WhatsApp</span>
+    <span class="sm:hidden">WhatsApp</span>
+  </a>
+
+  <script>
+    // Número de WhatsApp en formato internacional, sin + ni espacios.
+    const WHATSAPP_NUMBER = "51999888777";
+
+    const products = [
+      {
+        category: "burgers",
+        tag: "La favorita",
+        name: "La Brava Clásica",
+        description: "Doble carne a la parrilla, cheddar, cebolla caramelizada, pepinillos y salsa brava.",
+        price: "S/ 24",
+        image: "photo-1568901346375-23c9450c58cd"
+      },
+      {
+        category: "burgers",
+        tag: "Con carácter",
+        name: "Fuego Doble",
+        description: "Doble smash, queso pepper jack, jalapeños, tocino y mayo ahumada.",
+        price: "S/ 29",
+        image: "photo-1553979459-d2229ba7433a"
+      },
+      {
+        category: "burgers",
+        tag: "La de la casa",
+        name: "La Criolla",
+        description: "Carne jugosa, queso, plátano maduro, cebolla morada y salsa criolla.",
+        price: "S/ 27",
+        image: "photo-1571091718767-18b5b1457add"
+      },
+      {
+        category: "shakes",
+        tag: "Bien espesito",
+        name: "Malteada de Fresa",
+        description: "Fresas, helado de vainilla y crema batida. Preparada al momento.",
+        price: "S/ 14",
+        image: "photo-1572490122747-3968b75cc699"
+      },
+      {
+        category: "shakes",
+        tag: "Un clásico",
+        name: "Batido de Chocolate",
+        description: "Chocolate intenso, leche fría y helado cremoso. Puro confort.",
+        price: "S/ 14",
+        image: "photo-1577805947697-89e18249d767"
+      },
+      {
+        category: "shakes",
+        tag: "Dulce antojo",
+        name: "Malteada de Oreo",
+        description: "Galleta Oreo, helado de vainilla y un toque extra de chocolate.",
+        price: "S/ 16",
+        image: "photo-1579954115545-a95591f28bfc"
+      },
+      {
+        category: "extras",
+        tag: "Recién hecho",
+        name: "Pan con Pollo Bravazo",
+        description: "Pollo deshilachado, palta, papitas al hilo y mayonesa de la casa.",
+        price: "S/ 18",
+        image: "photo-1606755962773-d324e0a13086"
+      },
+      {
+        category: "extras",
+        tag: "Para compartir",
+        name: "Papas Bravas",
+        description: "Papas doraditas con nuestra salsa brava y un toque de perejil.",
+        price: "S/ 12",
+        image: "photo-1573080496219-bb080dd4f877"
+      },
+      {
+        category: "extras",
+        tag: "El complemento",
+        name: "Aros de Cebolla",
+        description: "Crujientes por fuera, suaves por dentro. Incluyen salsa de la casa.",
+        price: "S/ 13",
+        image: "photo-1639024471283-03518883512d"
+      }
+    ];
+
+    // Crea las tarjetas desde los datos para mantener el filtro y los pedidos sincronizados.
+    const grid = document.getElementById("product-grid");
+
+    function renderProducts(filter = "all") {
+      const visibleProducts = products.filter(
+        product => filter === "all" || product.category === filter
+      );
+
+      grid.innerHTML = visibleProducts.map(product => {
+        const message = encodeURIComponent(
+          `¡Hola! Me gustaría pedir ${product.name} de La Brava`
+        );
+        const imageUrl =
+          `https://images.unsplash.com/${product.image}?auto=format&fit=crop&w=900&q=85`;
+
+        return `
+          <article class="food-card overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative h-56 overflow-hidden">
+              <div
+                class="food-image absolute inset-0"
+                role="img"
+                aria-label="${product.name}"
+                style="background-image: url('${imageUrl}')"
+              ></div>
+              <span class="absolute left-4 top-4 rounded-full bg-paper px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.13em]">
+                ${product.tag}
+              </span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="text-xl font-extrabold">${product.name}</h3>
+                <span class="whitespace-nowrap text-lg font-extrabold text-fire">${product.price}</span>
+              </div>
+              <p class="mt-2 min-h-[48px] text-sm leading-6 text-ink/60">${product.description}</p>
+              <a
+                class="mt-5 flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-extrabold text-white hover:bg-fire"
+                href="https://wa.me/${WHATSAPP_NUMBER}?text=${message}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Pedir ${product.name} por WhatsApp"
+              >Pedir por WhatsApp ↗</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    renderProducts();
+
+    document.querySelectorAll(".menu-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".menu-tab").forEach(tab => {
+          tab.setAttribute("aria-pressed", String(tab === button));
+        });
+        renderProducts(button.dataset.filter);
+      });
+    });
+
+    // Menú desplegable en pantallas pequeñas.
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileNav = document.getElementById("mobile-nav");
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = mobileNav.classList.toggle("open");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.setAttribute("aria-label", isOpen ? "Cerrar menú" : "Abrir menú");
+    });
+
+    mobileNav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        mobileNav.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Abrir menú");
+      });
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
